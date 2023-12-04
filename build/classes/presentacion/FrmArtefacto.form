@@ -116,16 +116,18 @@
                                       <Component id="jLabel12" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="txtSubTotal" max="32767" attributes="0"/>
-                                      <Component id="txtIgv" max="32767" attributes="0"/>
-                                      <Component id="txtTotal" min="-2" pref="80" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="txtSubTotal" min="-2" pref="80" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="txtIgv" max="32767" attributes="0"/>
+                                          <Component id="txtTotal" min="-2" pref="80" max="-2" attributes="0"/>
+                                      </Group>
                                   </Group>
                               </Group>
                           </Group>
                       </Group>
                   </Group>
-                  <EmptySpace pref="15" max="32767" attributes="0"/>
+                  <EmptySpace pref="26" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -278,7 +280,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JTextArea" name="teaDescripcion">
+            <Component class="javax.swing.JTextArea" name="taDescripcion">
               <Properties>
                 <Property name="columns" type="int" value="20"/>
                 <Property name="rows" type="int" value="5"/>
@@ -306,6 +308,9 @@
               </StringArray>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbMarcaActionPerformed"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
@@ -329,6 +334,9 @@
               </StringArray>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbTipoActionPerformed"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
@@ -441,8 +449,6 @@
         </Component>
         <Component class="javax.swing.JTextField" name="txtMayorPrecio">
         </Component>
-        <Component class="javax.swing.JTextField" name="txtSubTotal">
-        </Component>
         <Component class="javax.swing.JTextField" name="txtIgv">
         </Component>
         <Component class="javax.swing.JTextField" name="txtTotal">
@@ -456,6 +462,8 @@
             </Property>
             <Property name="text" type="java.lang.String" value="      "/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="txtSubTotal">
         </Component>
       </SubComponents>
     </Container>

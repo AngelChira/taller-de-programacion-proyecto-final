@@ -1,12 +1,14 @@
 package presentacion;
 
 import entidad.Artefacto;
+import java.text.DecimalFormat;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import negocio.ArtefactoNegocio;
 
 
 public class FrmArtefacto extends javax.swing.JFrame {
+    DecimalFormat df = new DecimalFormat("0.00");
     private String idNombre;
     private float precio;
     private short cantidad;
@@ -20,6 +22,7 @@ public class FrmArtefacto extends javax.swing.JFrame {
     
     public FrmArtefacto() {        
         initComponents();
+        txtPrecio.setEditable(false);
         artefactoNegocio = new ArtefactoNegocio();
         txtMayorPrecio.setEditable(false);
         txtTotal.setEditable(false);
@@ -33,7 +36,7 @@ public class FrmArtefacto extends javax.swing.JFrame {
     
     public void limpiarTextField(){
         txtNombre.setText("");
-        teaDescripcion.setText("");
+        taDescripcion.setText("");
         cbMarca.setSelectedIndex(0);
         cbTipo.setSelectedIndex(0);
         txtPrecio.setText("");
@@ -42,7 +45,7 @@ public class FrmArtefacto extends javax.swing.JFrame {
     
     public void habilitarTextField(boolean sw){
         txtNombre.setEnabled(sw);
-        teaDescripcion.setEnabled(sw);
+        taDescripcion.setEnabled(sw);
         cbMarca.setEnabled(sw);
         cbTipo.setEnabled(sw);
         txtPrecio.setEnabled(sw);
@@ -63,20 +66,35 @@ public class FrmArtefacto extends javax.swing.JFrame {
     }
     
     public void listarArtefactos(){
+        float importe= 0.0f;
         if(artefactoNegocio.listarArtefactos() != null){
             limpiarTabla();
             for(Artefacto a : artefactoNegocio.listarArtefactos()){
                 if(a != null){
+                    importe = a.getPrecio() * a.getCantidad();
                     datos[0] = a.getNombre();
                     datos[1] = a.getMarca();
                     datos[2] = a.getPrecio();
                     datos[3] = a.getCantidad();
-                    datos[4] = a.getPrecio() * a.getCantidad();
+                    datos[4] = df.format(importe);
                     modelo.addRow(datos);
                 }                
             }
-            tblArtefactos.setModel(modelo);
+            tblArtefactos.setModel(modelo);            
+        }
+
+        if (artefactoNegocio.totalArtefactos()>0){
+            txtMayorPrecio.setText(""+artefactoNegocio.artefactoMayorPrecio());
             txtTotalArtefactos.setText(""+artefactoNegocio.totalArtefactos());
+            txtSubTotal.setText(""+df.format(artefactoNegocio.calcularSubTotal()));
+            txtIgv.setText(""+df.format(artefactoNegocio.calcularIgv()));
+            txtTotal.setText(""+df.format(artefactoNegocio.calcularTotal()));
+        } else {
+            txtMayorPrecio.setText("");
+            txtTotalArtefactos.setText("");
+            txtSubTotal.setText("");
+            txtIgv.setText("");
+            txtTotal.setText("");
         }
     }
     
@@ -94,7 +112,7 @@ public class FrmArtefacto extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        teaDescripcion = new javax.swing.JTextArea();
+        taDescripcion = new javax.swing.JTextArea();
         jLabel4 = new javax.swing.JLabel();
         cbMarca = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
@@ -114,11 +132,11 @@ public class FrmArtefacto extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         txtTotalArtefactos = new javax.swing.JTextField();
         txtMayorPrecio = new javax.swing.JTextField();
-        txtSubTotal = new javax.swing.JTextField();
         txtIgv = new javax.swing.JTextField();
         txtTotal = new javax.swing.JTextField();
         txtNombre = new javax.swing.JTextField();
         lblMessage = new javax.swing.JLabel();
+        txtSubTotal = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -146,19 +164,29 @@ public class FrmArtefacto extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Descripción");
 
-        teaDescripcion.setColumns(20);
-        teaDescripcion.setRows(5);
-        jScrollPane2.setViewportView(teaDescripcion);
+        taDescripcion.setColumns(20);
+        taDescripcion.setRows(5);
+        jScrollPane2.setViewportView(taDescripcion);
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel4.setText("Marca");
 
         cbMarca.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "Sony", "Panasonic", "Samsumg", "LG" }));
+        cbMarca.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbMarcaActionPerformed(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel5.setText("Tipo");
 
         cbTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "Audio", "Video", "Linea Blanca" }));
+        cbTipo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbTipoActionPerformed(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel6.setText("Precio");
@@ -278,11 +306,12 @@ public class FrmArtefacto extends javax.swing.JFrame {
                                     .addComponent(jLabel11)
                                     .addComponent(jLabel12))
                                 .addGap(48, 48, 48)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtSubTotal)
-                                    .addComponent(txtIgv)
-                                    .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addContainerGap(15, Short.MAX_VALUE))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtSubTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(txtIgv)
+                                        .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -375,44 +404,30 @@ public class FrmArtefacto extends javax.swing.JFrame {
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
         nuevo = true;
+        limpiarTextField();
         btnNuevo.setEnabled(false);
         btnAgregar.setEnabled(true);
         habilitarTextField(true);
+        txtNombre.requestFocus();
         lblMessage.setText("  ");
-        limpiarTextField();
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
-        if(!(txtNombre.getText().trim().isEmpty() || 
-                teaDescripcion.getText().trim().isEmpty() || 
+        if(!(txtNombre.getText().strip().isEmpty() || 
+                taDescripcion.getText().strip().isEmpty() || 
                 cbMarca.getSelectedItem().toString().equalsIgnoreCase(
                         "Seleccionar") || 
                 cbTipo.getSelectedItem().toString().equalsIgnoreCase(
                         "Seleccionar") || 
-                txtPrecio.getText().trim().isEmpty() || 
-                txtCantidad.getText().trim().isEmpty()))
-        {
-            try {
-                precio = Float.parseFloat(txtPrecio.getText().trim());
-            } catch (Exception e){
-                JOptionPane.showMessageDialog(null,
-                    "Advertencia, el precio  debe ser numeros positivos.",
-                    "Advertencia",
-                    JOptionPane.WARNING_MESSAGE);
-                    txtPrecio.requestFocus();
-                    return;
-            }
+                txtCantidad.getText().strip().isEmpty()))
+        {            
+            precio = artefactoNegocio.precioEncontrado(
+                    cbMarca.getSelectedIndex(), 
+                    cbTipo.getSelectedIndex()
+            );       
             
-            if (precio <= 0){
-                JOptionPane.showMessageDialog(null,
-                    "Advertencia, el precio debe ser mayor a 0",
-                    "Advertencia",
-                    JOptionPane.WARNING_MESSAGE);
-                txtPrecio.requestFocus();
-                return;
-            }
             try {
-                cantidad = Short.parseShort(txtCantidad.getText().trim());
+                cantidad = Short.parseShort(txtCantidad.getText().strip());
             } catch (Exception e){
                 JOptionPane.showMessageDialog(null,
                     "Advertencia, la cantidad debe ser numeros enteros.",
@@ -430,11 +445,12 @@ public class FrmArtefacto extends javax.swing.JFrame {
                 txtCantidad.requestFocus();
                 return;
             }
+            txtPrecio.setText(""+precio);
             
             if(nuevo){
                 nuevo = false;
-                if(artefactoNegocio.agregar(txtNombre.getText().trim(), 
-                        teaDescripcion.getText().trim(), 
+                if(artefactoNegocio.agregar(txtNombre.getText().strip(), 
+                        taDescripcion.getText().strip(), 
                         cbMarca.getSelectedItem().toString(), 
                         cbTipo.getSelectedItem().toString(), 
                         precio, cantidad))
@@ -443,11 +459,12 @@ public class FrmArtefacto extends javax.swing.JFrame {
                 } else {                    
                     lblMessage.setText("El registro no se pudo agregar.");
                 }
+                
             } else {
                 nuevo = true;
                 if(artefactoNegocio.actualizar(idNombre, 
-                        txtNombre.getText().trim(), 
-                        teaDescripcion.getText().trim(), 
+                        txtNombre.getText().strip(), 
+                        taDescripcion.getText().strip(), 
                         cbMarca.getSelectedItem().toString(), 
                         cbTipo.getSelectedItem().toString(), 
                         precio, cantidad))
@@ -456,7 +473,8 @@ public class FrmArtefacto extends javax.swing.JFrame {
                 } else {
                     lblMessage.setText("El registro no actualizo.");
                 }
-            }
+                
+            }            
             listarArtefactos();
             habilitarTextField(false);
             habilitarBotones(false);
@@ -464,19 +482,86 @@ public class FrmArtefacto extends javax.swing.JFrame {
         } else {
             lblMessage.setText("Faltan agregar campos.");
         }
+        
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
-        // TODO add your handling code here:
+        nuevo = false;
+        btnAgregar.setEnabled(true);
+        btnModificar.setEnabled(false);
+        btnEliminar.setEnabled(false);
+        habilitarTextField(true);
+        lblMessage.setText(" ");
+        txtNombre.requestFocus();
     }//GEN-LAST:event_btnModificarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        tblArtefactos.clearSelection();
+        if(JOptionPane.showConfirmDialog(
+                null,
+                "Esta seguro de Eliminar?",
+                "Eliminar",
+                JOptionPane.YES_NO_OPTION,
+                3) == 0){
+            if(artefactoNegocio.eliminar(idNombre)){
+                lblMessage.setText("El registro se elimino exitosamente.");
+            } else {
+                lblMessage.setText("El registro no se pudo eliminar.");
+            }            
+            habilitarBotones(false);
+        } else {
+            habilitarBotones(false);
+        }
+        limpiarTextField();
+        listarArtefactos();
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void tblArtefactosMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblArtefactosMousePressed
-        // TODO add your handling code here:
+        try {
+            fila = (byte) tblArtefactos.getSelectedRow();
+            idNombre = tblArtefactos.getValueAt(fila, 0).toString();
+            txtNombre.setText(tblArtefactos.getValueAt(fila, 0).toString());
+            taDescripcion.setText(artefactoNegocio.obtenerDescripcion(idNombre));
+            cbMarca.setSelectedItem(tblArtefactos.getValueAt(fila, 1));
+            cbTipo.setSelectedItem(artefactoNegocio.obtenerTipo(idNombre));
+            txtPrecio.setText(tblArtefactos.getValueAt(fila, 2).toString());
+            txtCantidad.setText(tblArtefactos.getValueAt(fila, 3).toString());
+            habilitarBotones(true);
+            btnAgregar.setEnabled(false);
+            lblMessage.setText(" ");
+        } catch (ArrayIndexOutOfBoundsException e ){
+            lblMessage.setText(" ");
+            return;
+        }
+        
     }//GEN-LAST:event_tblArtefactosMousePressed
+
+    private void cbTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTipoActionPerformed
+        precio = artefactoNegocio.precioEncontrado(
+                    cbMarca.getSelectedIndex(), 
+                    cbTipo.getSelectedIndex()
+            );
+        if(cbTipo.getSelectedItem().toString().equalsIgnoreCase(
+                        "Seleccionar")){
+            txtPrecio.setText("");
+        } else {
+            txtPrecio.setText(""+precio);
+        }
+        
+    }//GEN-LAST:event_cbTipoActionPerformed
+
+    private void cbMarcaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbMarcaActionPerformed
+        precio = artefactoNegocio.precioEncontrado(
+                    cbMarca.getSelectedIndex(), 
+                    cbTipo.getSelectedIndex()
+            );
+        if(cbMarca.getSelectedItem().toString().equalsIgnoreCase(
+                        "Seleccionar")){
+            txtPrecio.setText("");
+        } else {
+            txtPrecio.setText(""+precio);
+        };
+    }//GEN-LAST:event_cbMarcaActionPerformed
 
     public static void main(String args[]) {
         try {
@@ -526,8 +611,8 @@ public class FrmArtefacto extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel lblMessage;
+    private javax.swing.JTextArea taDescripcion;
     private javax.swing.JTable tblArtefactos;
-    private javax.swing.JTextArea teaDescripcion;
     private javax.swing.JTextField txtCantidad;
     private javax.swing.JTextField txtIgv;
     private javax.swing.JTextField txtMayorPrecio;
