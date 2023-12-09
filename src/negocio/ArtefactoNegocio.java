@@ -28,8 +28,18 @@ public class ArtefactoNegocio {
             precio = precios[marca-1][tipo-1];
         } catch(Exception e){
             precio = 0.00f;
+            return precio;
         }    
         return precio;
+    }
+    
+    public boolean verificarNombre(String nombre){
+        for (int i = 0; i < artefactos.length; i++) {
+            if(artefactos[i] != null && artefactos[i].getNombre().equalsIgnoreCase(nombre)){
+                return false;
+            }
+        }
+        return true;
     }
     
     public boolean agregar(String nombre, String descripcion, String marca, String tipo, float precio, short cantidad){
@@ -137,7 +147,7 @@ public class ArtefactoNegocio {
     }
     
     public float calcularTotal(){
-        return (float) (calcularSubTotal() - calcularIgv());
+        return (float) (calcularSubTotal() + calcularIgv());
     }
     
     public String obtenerDescripcion(String idNombre){

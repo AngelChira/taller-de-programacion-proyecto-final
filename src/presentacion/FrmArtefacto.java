@@ -448,30 +448,49 @@ public class FrmArtefacto extends javax.swing.JFrame {
             txtPrecio.setText(""+precio);
             
             if(nuevo){
-                nuevo = false;
-                if(artefactoNegocio.agregar(txtNombre.getText().strip(), 
-                        taDescripcion.getText().strip(), 
-                        cbMarca.getSelectedItem().toString(), 
-                        cbTipo.getSelectedItem().toString(), 
-                        precio, cantidad))
-                {
-                    lblMessage.setText("El registro se agrego de manera exitosa.");
-                } else {                    
-                    lblMessage.setText("El registro no se pudo agregar.");
-                }
-                
-            } else {
-                nuevo = true;
-                if(artefactoNegocio.actualizar(idNombre, 
-                        txtNombre.getText().strip(), 
-                        taDescripcion.getText().strip(), 
-                        cbMarca.getSelectedItem().toString(), 
-                        cbTipo.getSelectedItem().toString(), 
-                        precio, cantidad))
-                {
-                    lblMessage.setText("El registro se actualizo de manera exitosa.");                    
+                if(artefactoNegocio.verificarNombre(txtNombre.getText().strip())){
+                    nuevo = false;
+                    if(artefactoNegocio.agregar(txtNombre.getText().strip(), 
+                            taDescripcion.getText().strip(), 
+                            cbMarca.getSelectedItem().toString(), 
+                            cbTipo.getSelectedItem().toString(), 
+                            precio, cantidad))
+                    {
+                        lblMessage.setText("El registro se agrego de manera exitosa.");
+                    } else {                    
+                        lblMessage.setText("El registro no se pudo agregar.");
+                    }
                 } else {
-                    lblMessage.setText("El registro no actualizo.");
+                    lblMessage.setText("El nombre ya existe.");
+                    txtNombre.requestFocus();
+                    JOptionPane.showMessageDialog(null,
+                    "Advertencia, el nombre ya existe.",
+                    "Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
+                    return;
+                }            
+            } else {
+                if (artefactoNegocio.verificarNombre(txtNombre.getText().strip())){
+                    nuevo = true;
+                    if(artefactoNegocio.actualizar(idNombre, 
+                            txtNombre.getText().strip(), 
+                            taDescripcion.getText().strip(), 
+                            cbMarca.getSelectedItem().toString(), 
+                            cbTipo.getSelectedItem().toString(), 
+                            precio, cantidad))
+                    {
+                        lblMessage.setText("El registro se actualizo de manera exitosa.");                    
+                    } else {
+                        lblMessage.setText("El registro no actualizo.");
+                    }
+                } else {
+                    lblMessage.setText("El nombre ya existe.");
+                    txtNombre.requestFocus();
+                    JOptionPane.showMessageDialog(null,
+                    "Advertencia, el nombre ya existe.",
+                    "Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
+                    return;
                 }
                 
             }            
@@ -505,6 +524,7 @@ public class FrmArtefacto extends javax.swing.JFrame {
                 3) == 0){
             if(artefactoNegocio.eliminar(idNombre)){
                 lblMessage.setText("El registro se elimino exitosamente.");
+                modelo.removeRow(fila);
             } else {
                 lblMessage.setText("El registro no se pudo eliminar.");
             }            
@@ -560,7 +580,8 @@ public class FrmArtefacto extends javax.swing.JFrame {
             txtPrecio.setText("");
         } else {
             txtPrecio.setText(""+precio);
-        };
+        }
+        
     }//GEN-LAST:event_cbMarcaActionPerformed
 
     public static void main(String args[]) {
